@@ -1,0 +1,66 @@
+vdo no-14th 
+
+Code:
+create a new class under configuration
+
+
+com.shyreans.major--> configurations - SecurityConfig(class file)
+
+
+package com.sheryians.major.configuration;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig extends WebSecurityConfigurerAdapter
+{
+	@Override
+	protected void configure(HttpSecurity http) throws Exception (
+	http
+		.authorizeRequests()
+		.antMatchers(...antPatterns:"/","/shop/**","/register","/h2-console/**").permitAll()
+		.antMatchers(...antPatterns:"/admin/**").hasRole("ADMIN")
+		.anyRequest()
+		.authenticated()
+		.and()
+		.formLogin()
+		.loginPage("/login")
+		.permitAll()
+		.failureUrl("/login?error= true")
+		.defaultSuccessUrl("/")
+		.usernameParameter("email")
+		.passwordParameter("password")
+		.and()
+		.oauth2Login()
+		.loginPage("/login")
+		.successHandler(google0Auth2SucessHandler)
+		.and()
+		.logout()
+		.logoutRequestMatcher(new AntPathRequestMatcher(pattern: "/logout"))
+		.logoutSucessUrl("/login")
+		.invalidateHttpSessions(true)
+		.deletecookies("JSESSIONID")
+		.and()
+		.exceptionHandling()
+		.and()
+		.csrf()
+		.disable();
+	http.header().frameOptions().disable();
+}
+	@Bean
+	public BCryptPasswordEncoder bcryptPasswordEncoder()
+	{
+	return new BCryptPasswordEncoder();
+	}
+
+	@Override
+	protected void configure(AuthenticationManagerBuilder auth) throws Exception
+	{
+	auth.userDetailsService(customUserDetailService);
+	}
+	
+	@Override
+	protected void configure(WebSecurity web) throws Exception
+	{
+	web.ingnoring().antMatchers(...antPatterns:"/resources/**","/static/**","/images/**","/productimages/**,"/css/**","/js/**")
+	}
+}
